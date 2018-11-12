@@ -1,34 +1,80 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="jquery-ui.min.js"></script>
+</head>
+
 <body>
 
-    <h1>The XMLHttpRequest Object</h1>
-
-    <button type="button" onclick="loadDoc()">Request data</button>
+    <h1>Wikidata Suggestor</h1>
 
     <p id="demo"></p>
+
+    <div class="ui-widget">
+        <textarea id="txtArea" cols="30" rows="10" onkeyup="onTestChange()"></textarea>
+    </div>
 
 </body>
 
 <script>
+    
 
-    function giveMeData() {
-        return url = wdk.searchEntities('Anna', 'en', 1, 'json');
+    function onTestChange() {
+        var text = document.getElementById("txtArea").value;
+        var searchText = getLastElement(text);
+        if (searchText != "") {
+            loadDoc(searchText);
+        }
     }
 
-    function loadDoc() {
+    function getLastElement(text) {
+        return text.split(" ").slice(-1).pop();
+    }
+
+    function giveMeData(search) {
+        return url = wdk.searchEntities(search, 'en', 5, 'json');
+    }
+
+    function loadDoc(search) {
+
         const Http = new XMLHttpRequest();
-        const url = giveMeData();
+        const url = giveMeData(search);
         Http.open("GET", url);
         Http.send();
         Http.onreadystatechange = (e) => {
-            console.log(Http.responseText)
-            document.getElementById("demo").innerHTML = Http.responseText;
+
+            var availableTags = [];
+
+            if (Http.readyState == 4 && Http.status == 200) {
+                var response = JSON.parse(Http.response);
+                response.search.forEach(element => {
+                    availableTags.push(element.label);
+                });
+
+                autoCompletee(availableTags);
+            }
+
+
+            //document.getElementById("demo").innerHTML = response.search[0].match.text;
         }
     }
+
+    function autoCompletee(tags) {
+        $("#txtArea").autocomplete({
+            source: tags
+        });
+    }
+
+    $(document).ready(function () {
+        var ann = new Annotator(document.body);
+    })
 </script>
+
 <script src="./wikidata-sdk.js.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="./annotator-full.min.js"></script>
+<link rel="stylesheet" type="text/css" href="./annotator.min.css">
+<link rel="stylesheet" type="text/css" href="./jquery-ui.min.css">
 
 </html>
