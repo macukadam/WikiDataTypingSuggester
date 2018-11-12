@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1>The XMLHttpRequest Object</h1>
+
+    <button type="button" onclick="loadDoc()">Request data</button>
+
+    <p id="demo"></p>
+
+</body>
+
+<script>
+
+    function giveMeData() {
+        return url = wdk.searchEntities('Anna', 'en', 1, 'json');
+    }
+
+    function loadDoc() {
+        const Http = new XMLHttpRequest();
+        const url = giveMeData();
+        Http.open("GET", url);
+        Http.send();
+        Http.onreadystatechange = (e) => {
+            console.log(Http.responseText)
+            document.getElementById("demo").innerHTML = Http.responseText;
+        }
+    }
+</script>
+<script src="./wikidata-sdk.js.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</html>
