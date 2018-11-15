@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="textcomp.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+        <script src="./wikidata-sdk.js.js"></script>
+</head>
+
+<body>
+    <textarea name="" id="textarea" cols="30" rows="10"></textarea>
+</body>
+
+<script>
+    $('textarea').textcomplete([{
+        match: /(^|\b)(\w{2,})$/,
+        search: function (term, callback) {
+            var words = loadDoc(term);
+            callback($.map(words, function (word) {
+                return word.indexOf(term) === 0 ? word : null;
+            }));
+        },
+        replace: function (value) { return '$1@' + value + ' '; }
+    }]);
+</script>
+
+<script>
+    function loadDoc(search) {
+
+        const Http = new XMLHttpRequest();
+        const url = giveMeData(search);
+        Http.open("GET", url, false);
+        Http.send();
+
+        availableTags = [];
+
+        if (Http.readyState == 4 && Http.status == 200) {
+            var response = JSON.parse(Http.response);
+            response.search.forEach(element => {
+                availableTags.push(element.label);
+            });
+        }
+
+        if (Http.readyState == 4 && Http.status == 200) {
+            return availableTags;
+        }
+    }
+
+    function giveMeData(search) {
+        return url = wdk.searchEntities(search, 'en', 50, 'json');
+    }
+
+</script>
+
+</html>

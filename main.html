@@ -13,13 +13,13 @@
     <p id="demo"></p>
 
     <div class="ui-widget">
-        <textarea id="txtArea" cols="30" rows="10" onkeyup="onTestChange()"></textarea>
+        <textarea id="txtArea" cols="30" rows="10" onkeydown="onTestChange()"></textarea>
     </div>
 
 </body>
 
 <script>
-    
+    var availableTags = [];
 
     function onTestChange() {
         var text = document.getElementById("txtArea").value;
@@ -45,7 +45,7 @@
         Http.send();
         Http.onreadystatechange = (e) => {
 
-            var availableTags = [];
+            availableTags = [];
 
             if (Http.readyState == 4 && Http.status == 200) {
                 var response = JSON.parse(Http.response);
@@ -56,7 +56,12 @@
                 autoCompletee(availableTags);
             }
 
+            if (Http.readyState == 4 && Http.status == 200) {
+                return availableTags;
+            }
 
+
+            
             //document.getElementById("demo").innerHTML = response.search[0].match.text;
         }
     }
