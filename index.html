@@ -8,11 +8,13 @@
         crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-        <script src="./wikidata-sdk.js.js"></script>
+    <script src="./wikidata-sdk.js.js"></script>
 </head>
 
 <body>
-    <textarea name="" id="textarea" cols="30" rows="10"></textarea>
+    <textarea class="form-control" id="textarea" cols="20" rows="20"></textarea>
+    <button type="button" class="btn btn-primary" onclick="">Primary</button>
+    <p id="demo"></p>
 </body>
 
 <script>
@@ -20,40 +22,112 @@
         match: /(^|\b)(\w{2,})$/,
         search: function (term, callback) {
             var words = loadDoc(term);
+            words.sort();
             callback($.map(words, function (word) {
-                return word.indexOf(term) === 0 ? word : null;
+                return word;
             }));
         },
-        replace: function (value) { return '$1@' + value + ' '; }
-    }]);
+        replace: function (word) {
+            //alert(word);
+            //return word + ' ';
+        }
+    }], {
+        maxCount: 20
+    }).on({
+        'textComplete:select': function (e, value, strategy) {
+            alert();
+        },
+    });
 </script>
 
 <script>
     function loadDoc(search) {
-
         const Http = new XMLHttpRequest();
         const url = giveMeData(search);
         Http.open("GET", url, false);
         Http.send();
-
         availableTags = [];
+        photos = [];
 
         if (Http.readyState == 4 && Http.status == 200) {
             var response = JSON.parse(Http.response);
             response.search.forEach(element => {
                 availableTags.push(element.label);
+                photos.push("https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + element.title +
+                    "&property=P18&format=json");
+            });
+        }
+        if (Http.readyState == 4 && Http.status == 200) {
+            //document.getElementById("demo").innerHTML = photos[0];
+            imgRequest(imgRequest(photos[0]));
+            return availableTags;
+        }
+
+
+    }
+
+    function imgRequest(imgQuey) {
+        availableTags2 = [];
+        const Http = new XMLHttpRequest();
+        const url = imgQuey
+        Http.open("GET", url, false);
+        Http.send();
+        if (Http.readyState == 4 && Http.status == 200) {
+            var response = JSON.parse(Http.response);
+            response.claims.P18.forEach(element => {
+                availableTags2.push(element.mainsnak.datavalue.value);
             });
         }
 
         if (Http.readyState == 4 && Http.status == 200) {
-            return availableTags;
+            document.getElementById("demo").innerHTML = availableTags2[0];
+            return availableTags2;
         }
     }
 
     function giveMeData(search) {
-        return url = wdk.searchEntities(search, 'en', 50, 'json');
+        return url = wdk.searchEntities(search, 'en', 20, 'json');
     }
 
+
+
+    //MD-5
+    //var hash = md5("value");
 </script>
+
+<style>
+    .textcomplete-item {
+        background-color: white;
+    }
+
+    .textcomplete-dropdown {
+        border: 1px solid #ddd;
+        background-color: white;
+    }
+
+    .textcomplete-dropdown li {
+        border-top: 1px solid #ddd;
+        padding: 2px 5px;
+    }
+
+    .textcomplete-dropdown li:first-child {
+        border-top: none;
+    }
+
+    .textcomplete-dropdown li:hover,
+    .textcomplete-dropdown .active {
+        background-color: rgb(110, 183, 219);
+    }
+
+    .textcomplete-dropdown {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .textcomplete-dropdown a:hover {
+        cursor: pointer;
+    }
+</style>
 
 </html>
