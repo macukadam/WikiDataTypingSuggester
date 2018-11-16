@@ -28,15 +28,20 @@
             }));
         },
         replace: function (word) {
-            //alert(word);
-            //return word + ' ';
+            return word + ' ';
         }
     }], {
-        maxCount: 20
-    }).on({
-        'textComplete:select': function (e, value, strategy) {
-            alert();
-        },
+        maxCount: 20,
+        onKeydown: function (e, commands) {
+            if (e.keyCode === 73) {
+                var index = $("ul[id*=textcomplete-dropdown-1] li.active");
+                self = $(".textcomplete-item active ");
+                alert(self.value);
+                return true;
+                
+            }
+            
+        }
     });
 </script>
 
@@ -59,7 +64,7 @@
         }
         if (Http.readyState == 4 && Http.status == 200) {
             //document.getElementById("demo").innerHTML = photos[0];
-            imgRequest(imgRequest(photos[0]));
+            imgRequest(photos[0]);
             return availableTags;
         }
 
