@@ -1,0 +1,61 @@
+.textcomplete-item {
+    background-color: white;
+}
+
+.textcomplete-dropdown {
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.textcomplete-dropdown li {
+    border-top: 1px solid #ddd;
+    padding: 2px 5px;
+}
+
+.textcomplete-dropdown li:first-child {
+    border-top: none;
+}
+
+.textcomplete-dropdown li:hover,
+.textcomplete-dropdown .active {
+    background-color: rgb(110, 183, 219);
+}
+
+.textcomplete-dropdown {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.textcomplete-dropdown a:hover {
+    cursor: pointer;
+}
+
+.dialogs { display: none; }
+
+.dialog {
+  background-color: #fff;
+  padding: 1em;
+  border-radius: .5em;
+  overflow: hidden;
+}
+
+.dialog button {
+  border: none;
+  background-color: #333;
+  color: #fff;
+  padding: .5em 1em;
+  font-size: 1em;
+  border-radius: .3em;
+  cursor: pointer;
+}
+
+.dialog button:hover { background-color: #444; }
+
+.dialog-footer {
+  background-color: #eee;
+  margin: -1em;
+  margin-top: 1em;
+  text-align: center;
+  padding: 1em;
+}
