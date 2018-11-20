@@ -2,63 +2,126 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
-        crossorigin="anonymous" />
-    <link href="./static/" type="text/css" rel="stylesheet" />
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="main.css">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="jquery-3.3.1.min.js"></script>
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <script src="./js/textcomp.js"></script>
 </head>
+
 <div style="display: none;">
     <div id="modal">
     </div>
 </div>
 
 <body>
-    <section class="page1">
-
-        <div id="textDiv" class="form-group">
-            <label for="textarea">WikiData data search:</label>
-            <textarea class="form-control" id="textarea" cols="100" rows="20" style="height:800px"></textarea>
-        </div>
-    </section>
+    <div id="textDiv" style="display:none" class="form-group">
+        <label for="textarea">WikiData data search:</label>
+        <textarea class="form-control" id="textarea" style="resize: none;"></textarea>
+    </div>
     <div class="main">
         <div>
             <div class="add-memory-header">
                 <div style="display: inline-block; width: 100%;">
                     <div style="float: right;">
-                        <button>Annotations</button>
-                        <button>Places</button>
-                        <button>Save</button>
-                        <button class="btn-primary" id="button-dialog" onclick="autoCompleteSwitch()">Autocomplete Mod</button>
+                        <button style="height: 26px;" onclick="getLinkedDatasFromMemo()">Search In Memories</button>
+                        <button class="btn-primary" id="button-dialog" onclick="autoCompleteSwitch()">WikiData
+                            Annotation</button>
+                    </div>
+                    <div style="float: right;">
+                        <textarea id="qryinput" type="text" style="resize: none; height: 26px;"></textarea>
                     </div>
                 </div>
             </div>
-
+            <br>
+            <br>
+            <h1 style="margin: auto;
+            width: 10%;">A Memory</h1>
             <div>
                 <div style="width: 100%;" id="editor">
                     <h1>My awesome memory</h1>
-                    <p><br /></p>
-                    <p>My memory is something something and then other things as well.</p>
-                    <p><br /></p>
-                    <p><strong>This is a bold text</strong></p>
-                    <p><br /></p>
-                    <p><em>And this is a italic text</em></p>
-                    <p><br /></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q16641">American Samoa</a></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q583910">Aš</a></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q1734763">Kas</a></p>
                     <p><br /></p>
                 </div>
             </div>
         </div>
     </div>
-
-
 </body>
 
 <script>
-    $(document).ready(function(){
-        $('#textDiv').hide();
-    })
+    var autoCopleteActivated = false;
+
+    function getLinkedDatasFromMemo(){
+        var hrefs = [];
+        var select = document.querySelectorAll('p > a');
+        select.forEach(function(val){
+            hrefs += $(this).attr('href');
+        })
+
+        
+    }
+
+    //var smt = a();
+    //rspns = searchQuery(smt);
+    searchAutoComplete();
+
+    function searchAutoComplete() {
+        var words = [];
+        var data = {};
+        $('#qryinput').textcomplete([{
+            match: /(^|\b)(\w{2,})$/,
+            search: function (term, callback) {
+            
+                data = searchTextOnWikidata($('#qryinput').val());
+                words = [];
+                data.search.forEach(element => {
+                    words.push(element.label);
+                });
+                callback($.map(words, function (word) {
+                    return word;
+                }));
+            },
+            replace: function (word) {
+                var i = 0;
+                for (i; i < words.length; i++) {
+                    if (words[i] == word) {
+                        break;
+                    }
+                }
+                $('#qryinput').val('');
+                return data.search[i].title;
+            }
+        }], {
+            maxCount: 20,
+            onKeydown: function (e, commands) {
+                if (e.keyCode === 39) {
+                    var activeLi = $("ul[id*=textcomplete-dropdown-1] li.active");
+                    var activeIndex = activeLi.index();
+
+                    imageQ = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + data.search[
+                            activeIndex].title +
+                        "&property=P18&format=json"
+
+                    imageSource = '';
+
+                    try {
+                        var imgText = searchQuery(imageQ).claims.P18[0].mainsnak.datavalue.value.split(' ')
+                            .join(
+                                '_');
+                        var hash = md5(imgText);
+                        var a = hash.substring(0, 1);
+                        var b = hash.substring(1, 2);
+                        imageSource = "https://upload.wikimedia.org/wikipedia/commons/" + a + "/" + a + b +
+                            "/" + imgText;
+                    } catch (e) {
+                        console.log("Image not found");
+                    }
+
+                    openDiag(words[activeIndex], imageSource, data.search[activeIndex].description);
+                    return true;
+                }
+            }
+        });
+    }
 
     function closeDiag() {
         $('#textcomplete-dropdown-1').show();
@@ -72,11 +135,7 @@
             .append('<button data-dialog-close onclick="closeDiag()">Close</button>')
             .dialog({});
     }
-</script>
-
-<script>
-    var autoCopleteActivated = false;
-
+    
     function autoCompleteSwitch() {
         if (!autoCopleteActivated) {
             createAutoComplete();
@@ -92,14 +151,32 @@
     function destroyAutoComplete() {
         $('#textarea').textcomplete('destroy');
     }
+    
+    function a() {
+        var instance = 'P31';
+        var item = 'Q146';
+        var lang = 'en';
+        const sparql =
+            "SELECT ?item ?itemLabel " +
+            "WHERE " +
+            "{" +
+            "  ?item wdt:"+ instance +" wd:" + item +
+            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],"+ lang +"\" }" +
+            "}";
+
+        const url = wdk.sparqlQuery(sparql)
+        return url;
+    }
 
     function createAutoComplete() {
         var words = [];
         var data = {};
-        $('textarea').textcomplete([{
+        $('#textarea').textcomplete([{
             match: /(^|\b)(\w{2,})$/,
             search: function (term, callback) {
-                data = searchTextOnWikidata(term);
+                //var smt = a();
+                //rspns = searchQuery(smt);
+                data = searchTextOnWikidata($('#textarea').val());
                 words = [];
                 data.search.forEach(element => {
                     words.push(element.label);
@@ -109,6 +186,14 @@
                 }));
             },
             replace: function (word) {
+                var i = 0;
+                for (i; i < words.length; i++) {
+                    if (words[i] == word) {
+                        break;
+                    }
+                }
+                $('.ql-editor').append('<a class="wikidata" href="' + data.search[i].url + '">' + word + '</a>')
+                $('#textarea').val('');
                 return word + ' ';
             }
         }], {
@@ -167,13 +252,20 @@
         }
     }
 </script>
-<script src="textcomp.js"></script>
-<script src="./wikidata-sdk.js"></script>
-<script src="./js-md5.js"></script>
+<script src="./js/wikidata-sdk.js"></script>
+<script src="./js/js-md5.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="./jquery-dialog.min.js"></script>
+<script src="./js/jquery-dialog.min.js"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="./addmemory.js"></script>
+<script src="./js/addmemory.js"></script>
+<script src="./js/onepagescroll.js"></script>
+<link rel="stylesheet" href="./css/onepage-scroll.css">
+<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+    crossorigin="anonymous" />
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="./css/main.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 
 </html>

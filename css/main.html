@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="jquery-ui.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <h1>Wikidata Suggestor</h1>
+    <p id="demo"></p>
+    <textarea id="txtArea" cols="30" rows="10" onkeydown="onTestChange()"></textarea>
+</div>
+    
+
+</body>
+
+<script>
+    var availableTags = [];
+
+    function onTestChange() {
+        var text = document.getElementById("txtArea").value;
+        var searchText = getLastElement(text);
+        if (searchText != "") {
+            loadDoc(searchText);
+        }
+    }
+
+    function getLastElement(text) {
+        return text.split(" ").slice(-1).pop();
+    }
+
+    function giveMeData(search) {
+        return url = wdk.searchEntities(search, 'en', 5, 'json');
+    }
+
+    function loadDoc(search) {
+
+        const Http = new XMLHttpRequest();
+        const url = giveMeData(search);
+        Http.open("GET", url);
+        Http.send();
+        Http.onreadystatechange = (e) => {
+
+            availableTags = [];
+
+            if (Http.readyState == 4 && Http.status == 200) {
+                var response = JSON.parse(Http.response);
+                response.search.forEach(element => {
+                    availableTags.push(element.label);
+                });
+
+                autoCompletee(availableTags);
+            }
+
+            if (Http.readyState == 4 && Http.status == 200) {
+                return availableTags;
+            }
+
+
+            
+            //document.getElementById("demo").innerHTML = response.search[0].match.text;
+
+
+            //MD-5
+            //var hash = md5("value");
+        }
+    }
+
+    function autoCompletee(tags) {
+        $("#txtArea").autocomplete({
+            source: tags
+        });
+    }
+
+    $(document).ready(function () {
+        var ann = new Annotator(document.body);
+    })
+</script>
+
+<script src="./wikidata-sdk.js.js"></script>
+<script src="./annotator-full.min.js"></script>
+<script src="./js-md5.js"></script>
+<link rel="stylesheet" type="text/css" href="./annotator.min.css">
+<link rel="stylesheet" type="text/css" href="./jquery-ui.min.css">
+
+</html>
