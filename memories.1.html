@@ -32,14 +32,13 @@
             </div>
             <br>
             <br>
-            <h1 style="margin: auto;
-            width: 10%;">A Memory</h1>
+            <h1>A Memory</h1>
             <div>
                 <div style="width: 100%;" id="editor">
                     <h1>My awesome memory</h1>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q16641">American Samoa</a></p>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q583910">Aš</a></p>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q1734763">Kas</a></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q794">Iran</a></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q408">Australia</a></p>
+                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q16">Canada</a></p>
                     <p><br /></p>
                 </div>
             </div>
@@ -50,15 +49,28 @@
 <script>
     var autoCopleteActivated = false;
 
-    function getLinkedDatasFromMemo(){
-        var hrefs = [];
-        var select = document.querySelectorAll('p > a');
-        select.forEach(function(val){
-            hrefs += $(this).attr('href');
-        })
+    function getLinkedDatasFromMemo() {
+    var searchText = $('#qryinput').val();
+    var select = document.querySelectorAll('p > a');
+    var responseArray = [];
+    select.forEach(function (val) {
+        var splitedArray = val.href.split('/');
+        var itemQ = splitedArray[splitedArray.length - 1]
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+        var entities = response.entities;
 
-        
-    }
+        for (var entity in entities) {
+            var tempArray = [];
+            for (var t in entities[entity].claims) {
+                tempArray.push(t);
+            }
+            responseArray.push(tempArray);
+            
+        }
+    })
+
+    return responseArray;
+}
 
     //var smt = a();
     //rspns = searchQuery(smt);
@@ -152,18 +164,18 @@
         $('#textarea').textcomplete('destroy');
     }
     
-    function a() {
+    function getInstances(item) {
         var instance = 'P31';
-        var item = 'Q146';
         var lang = 'en';
         const sparql =
-            "SELECT ?item ?itemLabel " +
-            "WHERE " +
+            "SELECT ?item ?instance_of ?instance_ofLabel" +
+            " WHERE " +
             "{" +
-            "  ?item wdt:"+ instance +" wd:" + item +
-            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],"+ lang +"\" }" +
+            " ?item wdt:"+ instance +" wd:" + item +
+            " SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],"+ lang +"\" }" +
+            " OPTIONAL { ?item wdt:" + instance +" ?instance_of. }" +
             "}";
-
+           
         const url = wdk.sparqlQuery(sparql)
         return url;
     }
@@ -194,11 +206,12 @@
                 }
                 $('.ql-editor').append('<a class="wikidata" href="' + data.search[i].url + '">' + word + '</a>')
                 $('#textarea').val('');
-                return word + ' ';
+                return '';
             }
         }], {
             maxCount: 20,
             onKeydown: function (e, commands) {
+                
                 if (e.keyCode === 39) {
                     var activeLi = $("ul[id*=textcomplete-dropdown-1] li.active");
                     var activeIndex = activeLi.index();
