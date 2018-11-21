@@ -50,27 +50,42 @@
     var autoCopleteActivated = false;
 
     function getLinkedDatasFromMemo() {
-    var searchText = $('#qryinput').val();
-    var select = document.querySelectorAll('p > a');
-    var responseArray = [];
-    select.forEach(function (val) {
-        var splitedArray = val.href.split('/');
-        var itemQ = splitedArray[splitedArray.length - 1]
-        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
-        var entities = response.entities;
+        var searchText = $('#qryinput').val();
+        var select = document.querySelectorAll('p > a');
+        var responseArray = [];
+        select.forEach(function (val) {
+            var splitedArray = val.href.split('/');
+            var itemQ = splitedArray[splitedArray.length - 1]
+            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+            var entities = response.entities;
 
-        for (var entity in entities) {
-            var tempArray = [];
-            for (var t in entities[entity].claims) {
-                tempArray.push(t);
+            for (var entity in entities) {
+                var tempArray = [];
+                var claims = entities[entity].claims;
+                for (var t in claims) {
+                    var claim = claims[t];
+                    for (var k in claim){
+                    try {
+                        var value = claim[k].mainsnak.datavalue.value;
+                        var id =value.id;
+                        if (id != null){
+                            tempArray.push(id);    
+                        }
+                    } catch (error) {
+                        
+                    }
+                }
+                    
+                    
+                }
+                responseArray.push(tempArray);  
             }
-            responseArray.push(tempArray);
-            
-        }
-    })
-
-    return responseArray;
-}
+        })
+        responseArray.forEach(function (val) {
+            alert(val.includes(searchText));
+        })
+        return responseArray;
+    }
 
     //var smt = a();
     //rspns = searchQuery(smt);
@@ -137,10 +152,12 @@
 
     function closeDiag() {
         $('#textcomplete-dropdown-1').show();
+        $('#textcomplete-dropdown-2').show();
     }
 
     function openDiag(title, imgSource, content) {
         $('#textcomplete-dropdown-1').hide();
+        $('#textcomplete-dropdown-2').hide();
         $("#modal").append('<h1><a id="diagTitle" href="">' + title + '</a></h1>')
             .append('<img id="diagImage"  height="250" width="250" src="' + imgSource + '" alt="Image not found";>')
             .append('<p id="diagContent">' + content + '</p>')
@@ -213,7 +230,7 @@
             onKeydown: function (e, commands) {
                 
                 if (e.keyCode === 39) {
-                    var activeLi = $("ul[id*=textcomplete-dropdown-1] li.active");
+                    var activeLi = $("ul[id*=textcomplete-dropdown-2] li.active");
                     var activeIndex = activeLi.index();
 
                     imageQ = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + data.search[
