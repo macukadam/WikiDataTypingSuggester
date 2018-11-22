@@ -21,7 +21,8 @@
             <div class="add-memory-header">
                 <div style="display: inline-block; width: 100%;">
                     <div style="float: right;">
-                        <button style="height: 26px;" onclick="getLinkedDatasFromMemo()">Search In Memories</button>
+                        <button style="height: 26px;" onclick="searchByInsance()">Search by Instance</button>
+                        <button style="height: 26px;" onclick="getPropertiesFromMemo()">Search by Properities</button>
                         <button class="btn-primary" id="button-dialog" onclick="autoCompleteSwitch()">WikiData
                             Annotation</button>
                     </div>
@@ -49,7 +50,87 @@
 <script>
     var autoCopleteActivated = false;
 
-    function getLinkedDatasFromMemo() {
+    
+    var finalArray = [];
+    function searchByInsance()
+    {
+        var searchText = $('#qryinput').val();
+        var select = document.querySelectorAll('p > a');
+        var someArray = [];
+
+        for (let i = 0; i < select.length; i++) {
+            var splitedArray = select[i].href.split('/');
+            var itemQ = splitedArray[splitedArray.length - 1]
+            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+            var entities = response.entities;
+            for (var entity in entities) {
+                var claims = entities[entity].claims;
+                var P31 = claims.P31;
+                for(var index in P31){
+                    var value = P31[index].mainsnak.datavalue.value;
+                    var id =value.id;
+                    if (id != null){
+                        someArray.push(id);
+                    }
+                }
+
+                var P279 = claims.P279;
+                for(var index in P279){
+                    var value = P279[index].mainsnak.datavalue.value;
+                    var id =value.id;
+                    if (id != null){
+                        someArray.push(id);
+                    }
+                }
+            }
+        }
+        var diffArray = [];
+        finalArray = [];
+        finalArray = finalArray.concat(someArray);
+        recursivePropSearch(someArray, diffArray);
+        return finalArray;
+    }
+
+    function recursivePropSearch(givenArray, diffArray){
+        
+        givenArray.forEach(element => {
+            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + element + ".json");
+            var entities = response.entities;
+            for (var entity in entities) {
+                var claims = entities[entity].claims;
+                var P31 = claims.P31;
+                for(var index in P31){
+                    var value = P31[index].mainsnak.datavalue.value;
+                    var id =value.id;
+                    if (id != null){
+                        if(!finalArray.includes(id)){
+                            diffArray.push(id);
+                            finalArray.push(id);
+                        }
+                    }
+                }
+
+                var P279 = claims.P279;
+                for(var index in P279){
+                    var value = P279[index].mainsnak.datavalue.value;
+                    var id =value.id;
+                    if (id != null){
+                        if(!finalArray.includes(id)){
+                            diffArray.push(id);
+                            finalArray.push(id);
+                        }
+                    }
+                }
+            }
+            
+        });
+        var newDiffArray = [];
+        if(diffArray.length != 0){
+            recursivePropSearch(diffArray, newDiffArray);
+        }
+    }
+
+    function getPropertiesFromMemo() {
         var searchText = $('#qryinput').val();
         var select = document.querySelectorAll('p > a');
         var responseArray = [];
