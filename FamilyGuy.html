@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <script src="./js/textcomp.js"></script>
+    <script src="./js/searchBy.js"></script>
+</head>
+
+<div style="display: none;">
+    <div id="modal">
+    </div>
+</div>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Living Memories</h1>
+        <hr>
+        <div id="textDiv" style="display:none" class="form-group">
+            <label for="textarea">WikiData data search:</label>
+            <textarea class="form-control" id="textarea" style="resize: none;"></textarea>
+        </div>
+        <div class="main">
+            <div>
+                <div class="add-memory-header">
+                    <div style="display: inline-block; width: 100%;">
+                        <div style="float: right;">
+                            <button style="height: 26px;" onclick="searchByInsance()">Search by Instance</button>
+                            <button style="height: 26px;" onclick="getPropertiesFromMemo()">Search by Properities</button>
+                            <button class="btn-primary" id="button-dialog" onclick="autoCompleteSwitch()">WikiData
+                                Annotation</button>
+                        </div>
+                        <div style="float: right;">
+                            <textarea id="qryinput" type="text" style="resize: none; height: 26px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <h1>Family Guy</h1>
+                <div>
+                    <div style="width: 100%;" id="editor">
+                        <p><a href="http://www.wikidata.org/wiki/Q171048" target="_blank" style="background-color: rgb(255, 255, 255);">Toy
+                                Story</a>&nbsp;is a CGI animated film series that began with the original 1995
+                            film,&nbsp;<em>Toy Story</em>, produced by <a href="http://www.wikidata.org/wiki/Q127552"
+                                target="_blank" style="background-color: rgb(255, 255, 255);">Pixar</a> Animation
+                            Studios and released by&nbsp;<a href="http://www.wikidata.org/wiki/Q8704" target="_blank"
+                                style="background-color: rgb(255, 255, 255);">Walt Disney</a>&nbsp;Pictures. The plot
+                            centers around the idea that all toys, unknown to humans, are secretly alive, and the films
+                            focus on a diverse group of toys that feature a classic cowboy, <a href="http://www.wikidata.org/wiki/Q2290907"
+                                target="_blank" style="background-color: rgb(255, 255, 255);">Sheriff Woody</a>, and
+                            modern spaceman, <a href="http://www.wikidata.org/wiki/Q1986193" target="_blank" style="background-color: rgb(255, 255, 255);">Buzz
+                                Lightyear</a>.</p>
+                        <p><br></p>
+                        <p>Several plot elements of "<a href="http://www.wikidata.org/wiki/Q222018" target="_blank"
+                                style="background-color: rgb(255, 255, 255);">Total Recall</a>" are derived from
+                            the&nbsp;<em>Toy Story</em>&nbsp;series, including toys coming alive and a furnace scene
+                            reminiscent of the climax of&nbsp;<a href="http://www.wikidata.org/wiki/Q187278" target="_blank"
+                                style="background-color: rgb(255, 255, 255);">Toy Story 3</a>.</p>
+                        <p>In "<a href="http://www.wikidata.org/wiki/Q1440414" target="_blank" style="background-color: rgb(255, 255, 255);">Chris
+                                Cross</a>",&nbsp;<a href="http://www.wikidata.org/wiki/Q837909" target="_blank" style="background-color: rgb(255, 255, 255);">Stewie
+                                Griffin</a>&nbsp;tries to impress&nbsp;Brain&nbsp;with the works of&nbsp;<a href="http://www.wikidata.org/wiki/Q236543"
+                                target="_blank" style="background-color: rgb(255, 255, 255);">Anne Murray</a>&nbsp;by
+                            singing "<a href="http://www.wikidata.org/wiki/Q3430734" target="_blank" style="background-color: rgb(255, 255, 255);">You
+                                Needed Me</a>" before an audience of his toys. After he succeeds in winning over Brian,
+                            he notes that all of the toys were impressed but Buzz Lightyear, who was absent.
+                            A&nbsp;cutaway gag&nbsp;shows Buzz in a bar picking up girls using his catchphrase.</p>
+                        <p><br></p>
+                        <p>Brian thinks Carter is his friend in "<a href="http://www.wikidata.org/wiki/Q29096494"
+                                target="_blank" style="background-color: rgb(255, 255, 255);">The Finer Strings</a>",
+                            until Stewie points out that was what Woody thought about Buzz Lightyear, who is caught
+                            fooling around with <a href="http://www.wikidata.org/wiki/Q28733011" target="_blank" style="background-color: rgb(255, 255, 255);">Bo
+                                Peep</a>.</p>
+                        <p>Woody is voiced by&nbsp;<a href="http://www.wikidata.org/wiki/Q27656529" target="_blank"
+                                style="background-color: rgb(255, 255, 255);">Kiff VandenHeuvel</a> Buzz Lightyear is
+                            voiced by&nbsp;<a href="http://www.wikidata.org/wiki/Q6261993" target="_blank" style="background-color: rgb(255, 255, 255);">John
+                                Viener</a>. Bo Peep is voiced by&nbsp;<a href="http://www.wikidata.org/wiki/Q2382385"
+                                target="_blank" style="background-color: rgb(255, 255, 255);">Rachael MacFarlane</a>.</p>
+                        <p> <a href="https://vignette.wikia.nocookie.net/familyguy/images/7/77/Toy_story.png/revision/latest?cb=20170220145014"
+                                target="_blank" style="background-color: rgb(198, 231, 255); color: rgb(0, 108, 176);"><img
+                                    src="https://vignette.wikia.nocookie.net/familyguy/images/7/77/Toy_story.png/revision/latest/scale-to-width-down/300?cb=20170220145014"
+                                    alt="Toy story" height="174" width="300"></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var autoCopleteActivated = false;
+
+    var finalArray = [];
+
+    function searchByOneEntity(varQ) {
+    var someArray = [];
+
+    var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + varQ + ".json");
+    var entities = response.entities;
+    for (var entity in entities) {
+        var claims = entities[entity].claims;
+        var P31 = claims.P31;
+        for (var index in P31) {
+            var value = P31[index].mainsnak.datavalue.value;
+            var id = value.id;
+            if (id != null) {
+                someArray.push(id);
+            }
+        }
+
+        var P279 = claims.P279;
+        for (var index in P279) {
+            var value = P279[index].mainsnak.datavalue.value;
+            var id = value.id;
+            if (id != null) {
+                someArray.push(id);
+            }
+        }
+    }
+    
+    var diffArray = [];
+    finalArray = [];
+    finalArray = finalArray.concat(someArray);
+    recursivePropSearch(someArray, diffArray);
+    return finalArray;
+}
+
+    function searchByInsance() {
+    var searchText = $('#qryinput').val();
+    var select = document.querySelectorAll('p > a');
+    var someArray = [];
+
+    for (let i = 0; i < select.length; i++) {
+        var splitedArray = select[i].href.split('/');
+        var itemQ = splitedArray[splitedArray.length - 1]
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+        var entities = response.entities;
+        for (var entity in entities) {
+            var claims = entities[entity].claims;
+            var P31 = claims.P31;
+            for (var index in P31) {
+                var value = P31[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    someArray.push(id);
+                }
+            }
+
+            var P279 = claims.P279;
+            for (var index in P279) {
+                var value = P279[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    someArray.push(id);
+                }
+            }
+        }
+    }
+    var diffArray = [];
+    finalArray = [];
+    finalArray = finalArray.concat(someArray);
+    recursivePropSearch(someArray, diffArray);
+    return finalArray;
+}
+
+    
+    function recursivePropSearch(givenArray, diffArray) {
+    givenArray.forEach(element => {
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + element + ".json");
+        var entities = response.entities;
+        for (var entity in entities) {
+            var claims = entities[entity].claims;
+            var P31 = claims.P31;
+            for (var index in P31) {
+                var value = P31[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    if (!finalArray.includes(id)) {
+                        diffArray.push(id);
+                        finalArray.push(id);
+                    }
+                }
+            }
+
+            var P279 = claims.P279;
+            for (var index in P279) {
+                var value = P279[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    if (!finalArray.includes(id)) {
+                        diffArray.push(id);
+                        finalArray.push(id);
+                    }
+                }
+            }
+        }
+
+    });
+    var newDiffArray = [];
+    if (diffArray.length != 0) {
+        recursivePropSearch(diffArray, newDiffArray);
+    }
+}
+
+    function getPropertiesFromMemo() {
+    var searchText = $('#qryinput').val();
+    var select = document.querySelectorAll('p > a');
+    var responseArray = [];
+    select.forEach(function (val) {
+        var splitedArray = val.href.split('/');
+        var itemQ = splitedArray[splitedArray.length - 1]
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+        var entities = response.entities;
+
+        for (var entity in entities) {
+            var tempArray = [];
+            var claims = entities[entity].claims;
+            for (var t in claims) {
+                var claim = claims[t];
+                for (var k in claim) {
+                    try {
+                        var value = claim[k].mainsnak.datavalue.value;
+                        var id = value.id;
+                        if (id != null) {
+                            tempArray.push(id);
+                        }
+                    } catch (error) {
+
+                    }
+                }
+
+
+            }
+            responseArray.push(tempArray);
+        }
+    })
+    responseArray.forEach(function (val) {
+        alert(val.includes(searchText));
+    })
+    return responseArray;
+}
+
+    searchAutoComplete();
+
+    function searchAutoComplete() {
+        var words = [];
+        var data = {};
+        $('#qryinput').textcomplete([{
+            match: /(^|\b)(\w{2,})$/,
+            search: function (term, callback) {
+            
+                data = searchTextOnWikidata($('#qryinput').val());
+                words = [];
+                data.search.forEach(element => {
+                    words.push(element.label);
+                });
+                callback($.map(words, function (word) {
+                    return word;
+                }));
+            },
+            replace: function (word) {
+                var i = 0;
+                for (i; i < words.length; i++) {
+                    if (words[i] == word) {
+                        break;
+                    }
+                }
+                $('#qryinput').val('');
+                return data.search[i].title;
+            }
+        }], {
+            maxCount: 20,
+            onKeydown: function (e, commands) {
+                if (e.keyCode === 39) {
+                    var activeLi = $("ul[id*=textcomplete-dropdown-1] li.active");
+                    var activeIndex = activeLi.index();
+
+                    imageQ = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + data.search[
+                            activeIndex].title +
+                        "&property=P18&format=json"
+
+                    imageSource = '';
+
+                    try {
+                        var imgText = searchQuery(imageQ).claims.P18[0].mainsnak.datavalue.value.split(' ')
+                            .join(
+                                '_');
+                        var hash = md5(imgText);
+                        var a = hash.substring(0, 1);
+                        var b = hash.substring(1, 2);
+                        imageSource = "https://upload.wikimedia.org/wikipedia/commons/" + a + "/" + a + b +
+                            "/" + imgText;
+                    } catch (e) {
+                        console.log("Image not found");
+                    }
+
+                    openDiag(words[activeIndex], imageSource, data.search[activeIndex].description);
+                    return true;
+                }
+            }
+        });
+    }
+
+    function closeDiag() {
+        $('#textcomplete-dropdown-1').show();
+        $('#textcomplete-dropdown-2').show();
+    }
+
+    function openDiag(title, imgSource, content) {
+        $('#textcomplete-dropdown-1').hide();
+        $('#textcomplete-dropdown-2').hide();
+        $("#modal").append('<h1><a id="diagTitle" href="">' + title + '</a></h1>')
+            .append('<img id="diagImage"  height="250" width="250" src="' + imgSource + '" alt="Image not found";>')
+            .append('<p id="diagContent">' + content + '</p>')
+            .append('<button data-dialog-close onclick="closeDiag()">Close</button>')
+            .dialog({});
+    }
+    
+    function autoCompleteSwitch() {
+        if (!autoCopleteActivated) {
+            createAutoComplete();
+            $('#textDiv').show();
+            autoCopleteActivated = true;
+        } else {
+            destroyAutoComplete();
+            autoCopleteActivated = false;
+            $('#textDiv').hide();
+        }
+    }
+
+    function destroyAutoComplete() {
+        $('#textarea').textcomplete('destroy');
+    }
+    
+    function getInstances(item) {
+        var instance = 'P31';
+        var lang = 'en';
+        const sparql =
+            "SELECT ?item ?instance_of ?instance_ofLabel" +
+            " WHERE " +
+            "{" +
+            " ?item wdt:"+ instance +" wd:" + item +
+            " SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],"+ lang +"\" }" +
+            " OPTIONAL { ?item wdt:" + instance +" ?instance_of. }" +
+            "}";
+           
+        const url = wdk.sparqlQuery(sparql)
+        return url;
+    }
+
+    function createAutoComplete() {
+        var words = [];
+        var data = {};
+        $('#textarea').textcomplete([{
+            match: /(^|\b)(\w{2,})$/,
+            search: function (term, callback) {
+
+                data = searchTextOnWikidata($('#textarea').val());
+                words = [];
+                data.search.forEach(element => {
+                    words.push(element.label);
+                });
+                callback($.map(words, function (word) {
+                    return word;
+                }));
+            },
+            replace: function (word) {
+                var i = 0;
+                for (i; i < words.length; i++) {
+                    if (words[i] == word) {
+                        break;
+                    }
+                }
+                //var inst = searchByOneEntity(data.search[i].title);
+                //instanceArray.push(inst);
+                $('.ql-editor').append('<a class="wikidata" href="' + data.search[i].url + '">' + word + '</a>')
+                $('#textarea').val('');
+                return '';
+            }
+        }], {
+            maxCount: 20,
+            onKeydown: function (e, commands) {
+                
+                if (e.keyCode === 39) {
+                    var activeLi = $("ul[id*=textcomplete-dropdown-2] li.active");
+                    var activeIndex = activeLi.index();
+
+                    imageQ = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + data.search[
+                            activeIndex].title +
+                        "&property=P18&format=json"
+
+                    imageSource = '';
+
+                    try {
+                        var imgText = searchQuery(imageQ).claims.P18[0].mainsnak.datavalue.value.split(' ')
+                            .join(
+                                '_');
+                        var hash = md5(imgText);
+                        var a = hash.substring(0, 1);
+                        var b = hash.substring(1, 2);
+                        imageSource = "https://upload.wikimedia.org/wikipedia/commons/" + a + "/" + a + b +
+                            "/" + imgText;
+                    } catch (e) {
+                        console.log("Image not found");
+                    }
+
+                    openDiag(words[activeIndex], imageSource, data.search[activeIndex].description);
+                    return true;
+                }
+            }
+        });
+    }
+
+    function searchTextOnWikidata(text) {
+        const Http = new XMLHttpRequest();
+        const url = wdk.searchEntities(text, 'en', 20, 'json');
+        Http.open("GET", url, false);
+        Http.send();
+
+        if (Http.readyState == 4 && Http.status == 200) {
+            var response = JSON.parse(Http.response);
+            return response;
+        }
+    }
+
+    function searchQuery(imgQuey) {
+        const Http = new XMLHttpRequest();
+        const url = imgQuey
+        Http.open("GET", url, false);
+        Http.send();
+        if (Http.readyState == 4 && Http.status == 200) {
+            var response = JSON.parse(Http.response);
+            return response;
+        }
+    }
+</script>
+<script src="./js/wikidata-sdk.js"></script>
+<script src="./js/js-md5.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="./js/jquery-dialog.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./js/addmemory.js"></script>
+<script src="./js/onepagescroll.js"></script>
+<link rel="stylesheet" href="./css/onepage-scroll.css">
+<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+    crossorigin="anonymous" />
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="./css/main.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+</html>

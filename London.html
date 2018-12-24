@@ -4,6 +4,7 @@
 <head>
     <script src="./js/jquery-3.3.1.min.js"></script>
     <script src="./js/textcomp.js"></script>
+    <script src="./js/searchBy.js"></script>
 </head>
 
 <div style="display: none;">
@@ -33,14 +34,10 @@
             </div>
             <br>
             <br>
-            <h1>A Memory</h1>
+            <h1>London Alleys</h1>
             <div>
                 <div style="width: 100%;" id="editor">
-                    <h1>My awesome memory</h1>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q794">Iran</a></p>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q408">Australia</a></p>
-                    <p><a class="wikidata" href="//www.wikidata.org/wiki/Q16">Canada</a></p>
-                    <p><br /></p>
+                    <p><span style="color: rgb(0, 0, 0);">Though the Tower was always a part of </span><a href="http://www.wikidata.org/wiki/Q84" target="_blank" style="background-color: rgb(255, 255, 255);">London</a><span style="color: rgb(0, 0, 0);">, </span><a href="http://www.wikidata.org/wiki/Q5933" target="_blank" style="background-color: rgb(255, 255, 255);">Westminster Abbey</a><span style="color: rgb(0, 0, 0);"> was once over a mile from the capital city. For&nbsp;</span><strong style="color: rgb(0, 0, 0);">centuries</strong><span style="color: rgb(0, 0, 0);">, "London" just covered the area corresponding more or less to the </span><a href="http://www.wikidata.org/wiki/Q2202509" target="_blank" style="background-color: rgb(255, 255, 255);">Roman city</a><span style="color: rgb(0, 0, 0);">. Today, this part of London is still called the City of London, and is the heart of the bigger "London".</span></p><p><span style="color: rgb(0, 0, 0);">&nbsp;&nbsp;&nbsp;Until recently, "the City" was home to hundreds of thousands of people; but today its population is actually well less than ten thousand! Today the City is the heart of London's financial district, full of bankers and businessmen by day, almost&nbsp;</span><strong style="color: rgb(0, 0, 0);">deserted</strong><span style="color: rgb(0, 0, 0);">&nbsp;by night.</span></p><p><span style="color: rgb(0, 0, 0);">&nbsp;&nbsp;&nbsp;Back in the&nbsp;</span><a href="http://www.wikidata.org/wiki/Q12554" target="_blank" style="background-color: rgb(255, 255, 255);">Middle Ages</a><span style="color: rgb(0, 0, 0);">, the City was already becoming too small. In the 11th century,&nbsp;</span><strong style="color: rgb(0, 0, 0);">monks</strong><span style="color: rgb(0, 0, 0);">&nbsp;built a big new&nbsp;</span><strong style="color: rgb(0, 0, 0);">abbey</strong><span style="color: rgb(0, 0, 0);">&nbsp;at </span><a href="http://www.wikidata.org/wiki/Q189960" target="_blank" style="background-color: rgb(255, 255, 255);">Westminster</a><span style="color: rgb(0, 0, 0);">, and King Cnut began to build a palace beside it. King Ethelred, his&nbsp;</span><strong style="color: rgb(0, 0, 0);">successor</strong><span style="color: rgb(0, 0, 0);">, then decided to move his court from the city of Winchester, to the palace of Westminster. Westminster has been the seat of the English, then British, parliament since 1265, and London has been the capital city for even longer.</span></p><p><span style="color: rgb(0, 0, 0);">&nbsp;&nbsp;While the parliament was established in Westminster, the City's growing population kept&nbsp;</span><strong style="color: rgb(0, 0, 0);">spreading</strong><span style="color: rgb(0, 0, 0);">&nbsp;to other villages all round. Villages like Chelsea and Hackney&nbsp;</span><strong style="color: rgb(0, 0, 0);">eventually</strong><span style="color: rgb(0, 0, 0);">&nbsp;became&nbsp;</span><strong style="color: rgb(0, 0, 0);">swallowed up</strong><span style="color: rgb(0, 0, 0);">&nbsp;by the metropolis which kept growing and growing.</span></p><p><span style="color: rgb(0, 0, 0);">&nbsp;&nbsp;Today, Westminster, which contains </span><a href="http://www.wikidata.org/wiki/Q42182" target="_blank" style="background-color: rgb(255, 255, 255);">Buckingham Palace</a><span style="color: rgb(0, 0, 0);">, </span><a href="http://www.wikidata.org/wiki/Q11010" target="_blank" style="background-color: rgb(255, 255, 255);">Parliament of the United Kingdom</a><span style="color: rgb(0, 0, 0);">, </span><a href="http://www.wikidata.org/wiki/Q215255" target="_blank" style="background-color: rgb(255, 255, 255);">Piccadilly Circus</a><span style="color: rgb(0, 0, 0);">, </span><a href="http://www.wikidata.org/wiki/Q129143" target="_blank" style="background-color: rgb(255, 255, 255);">Trafalgar Square</a><span style="color: rgb(0, 0, 0);">, and London's most famous shopping district, is part of the "West End' of Central London. Nearby, </span><a href="http://www.wikidata.org/wiki/Q743535" target="_blank" style="background-color: rgb(255, 255, 255);">Chelsea</a><span style="color: rgb(0, 0, 0);"> is an expensive residential area, and </span><a href="http://www.wikidata.org/wiki/Q5637340" target="_blank" style="background-color: rgb(255, 255, 255);">Hackney</a><span style="color: rgb(0, 0, 0);"> is a working-class district: they are all parts of London.</span></p><p class="ql-align-right"><img src="https://linguapress.com/photos/dore-london.jpg" alt="London"></p><p class="ql-align-right">Poverty in&nbsp;London around 1870, seen by the artist Gustave Doré</p><p><br></p>
                 </div>
             </div>
         </div>
@@ -50,126 +47,157 @@
 <script>
     var autoCopleteActivated = false;
 
+var wowArray = [];
+var finalArray = [];
+
+    function searchByOneEntity(varQ) {
+    var someArray = [];
+
+    var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + varQ + ".json");
+    var entities = response.entities;
+    for (var entity in entities) {
+        var claims = entities[entity].claims;
+        var P31 = claims.P31;
+        for (var index in P31) {
+            var value = P31[index].mainsnak.datavalue.value;
+            var id = value.id;
+            if (id != null) {
+                someArray.push(id);
+            }
+        }
+
+        var P279 = claims.P279;
+        for (var index in P279) {
+            var value = P279[index].mainsnak.datavalue.value;
+            var id = value.id;
+            if (id != null) {
+                someArray.push(id);
+            }
+        }
+    }
     
-    var finalArray = [];
-    function searchByInsance()
-    {
-        var searchText = $('#qryinput').val();
-        var select = document.querySelectorAll('p > a');
-        var someArray = [];
+    var diffArray = [];
+    finalArray = [];
+    finalArray = finalArray.concat(someArray);
+    recursivePropSearch(someArray, diffArray);
+    return finalArray;
+}
 
-        for (let i = 0; i < select.length; i++) {
-            var splitedArray = select[i].href.split('/');
-            var itemQ = splitedArray[splitedArray.length - 1]
-            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
-            var entities = response.entities;
-            for (var entity in entities) {
-                var claims = entities[entity].claims;
-                var P31 = claims.P31;
-                for(var index in P31){
-                    var value = P31[index].mainsnak.datavalue.value;
-                    var id =value.id;
-                    if (id != null){
-                        someArray.push(id);
+    function searchByInsance() {
+    var searchText = $('#qryinput').val();
+    var select = document.querySelectorAll('p > a');
+    var someArray = [];
+
+    for (let i = 0; i < select.length; i++) {
+        var splitedArray = select[i].href.split('/');
+        var itemQ = splitedArray[splitedArray.length - 1]
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+        var entities = response.entities;
+        for (var entity in entities) {
+            var claims = entities[entity].claims;
+            var P31 = claims.P31;
+            for (var index in P31) {
+                var value = P31[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    someArray.push(id);
+                }
+            }
+
+            var P279 = claims.P279;
+            for (var index in P279) {
+                var value = P279[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    someArray.push(id);
+                }
+            }
+        }
+    }
+    var diffArray = [];
+    finalArray = [];
+    finalArray = finalArray.concat(someArray);
+    recursivePropSearch(someArray, diffArray);
+    return finalArray;
+}
+
+    function recursivePropSearch(givenArray, diffArray) {
+
+    givenArray.forEach(element => {
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + element + ".json");
+        var entities = response.entities;
+        for (var entity in entities) {
+            var claims = entities[entity].claims;
+            var P31 = claims.P31;
+            for (var index in P31) {
+                var value = P31[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    if (!finalArray.includes(id)) {
+                        diffArray.push(id);
+                        finalArray.push(id);
                     }
                 }
+            }
 
-                var P279 = claims.P279;
-                for(var index in P279){
-                    var value = P279[index].mainsnak.datavalue.value;
-                    var id =value.id;
-                    if (id != null){
-                        someArray.push(id);
+            var P279 = claims.P279;
+            for (var index in P279) {
+                var value = P279[index].mainsnak.datavalue.value;
+                var id = value.id;
+                if (id != null) {
+                    if (!finalArray.includes(id)) {
+                        diffArray.push(id);
+                        finalArray.push(id);
                     }
                 }
             }
         }
-        var diffArray = [];
-        finalArray = [];
-        finalArray = finalArray.concat(someArray);
-        recursivePropSearch(someArray, diffArray);
-        return finalArray;
-    }
 
-    function recursivePropSearch(givenArray, diffArray){
-        
-        givenArray.forEach(element => {
-            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + element + ".json");
-            var entities = response.entities;
-            for (var entity in entities) {
-                var claims = entities[entity].claims;
-                var P31 = claims.P31;
-                for(var index in P31){
-                    var value = P31[index].mainsnak.datavalue.value;
-                    var id =value.id;
-                    if (id != null){
-                        if(!finalArray.includes(id)){
-                            diffArray.push(id);
-                            finalArray.push(id);
-                        }
-                    }
-                }
-
-                var P279 = claims.P279;
-                for(var index in P279){
-                    var value = P279[index].mainsnak.datavalue.value;
-                    var id =value.id;
-                    if (id != null){
-                        if(!finalArray.includes(id)){
-                            diffArray.push(id);
-                            finalArray.push(id);
-                        }
-                    }
-                }
-            }
-            
-        });
-        var newDiffArray = [];
-        if(diffArray.length != 0){
-            recursivePropSearch(diffArray, newDiffArray);
-        }
+    });
+    var newDiffArray = [];
+    if (diffArray.length != 0) {
+        recursivePropSearch(diffArray, newDiffArray);
     }
+}
 
     function getPropertiesFromMemo() {
-        var searchText = $('#qryinput').val();
-        var select = document.querySelectorAll('p > a');
-        var responseArray = [];
-        select.forEach(function (val) {
-            var splitedArray = val.href.split('/');
-            var itemQ = splitedArray[splitedArray.length - 1]
-            var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
-            var entities = response.entities;
+    var searchText = $('#qryinput').val();
+    var select = document.querySelectorAll('p > a');
+    var responseArray = [];
+    select.forEach(function (val) {
+        var splitedArray = val.href.split('/');
+        var itemQ = splitedArray[splitedArray.length - 1]
+        var response = searchQuery("https://www.wikidata.org/wiki/Special:EntityData/" + itemQ + ".json");
+        var entities = response.entities;
 
-            for (var entity in entities) {
-                var tempArray = [];
-                var claims = entities[entity].claims;
-                for (var t in claims) {
-                    var claim = claims[t];
-                    for (var k in claim){
+        for (var entity in entities) {
+            var tempArray = [];
+            var claims = entities[entity].claims;
+            for (var t in claims) {
+                var claim = claims[t];
+                for (var k in claim) {
                     try {
                         var value = claim[k].mainsnak.datavalue.value;
-                        var id =value.id;
-                        if (id != null){
-                            tempArray.push(id);    
+                        var id = value.id;
+                        if (id != null) {
+                            tempArray.push(id);
                         }
                     } catch (error) {
-                        
+
                     }
                 }
-                    
-                    
-                }
-                responseArray.push(tempArray);  
-            }
-        })
-        responseArray.forEach(function (val) {
-            alert(val.includes(searchText));
-        })
-        return responseArray;
-    }
 
-    //var smt = a();
-    //rspns = searchQuery(smt);
+
+            }
+            responseArray.push(tempArray);
+        }
+    })
+    responseArray.forEach(function (val) {
+        alert(val.includes(searchText));
+    })
+    return responseArray;
+}
+
     searchAutoComplete();
 
     function searchAutoComplete() {
@@ -284,8 +312,7 @@
         $('#textarea').textcomplete([{
             match: /(^|\b)(\w{2,})$/,
             search: function (term, callback) {
-                //var smt = a();
-                //rspns = searchQuery(smt);
+
                 data = searchTextOnWikidata($('#textarea').val());
                 words = [];
                 data.search.forEach(element => {
@@ -302,6 +329,8 @@
                         break;
                     }
                 }
+                //var inst = searchByOneEntity(data.search[i].title);
+                //instanceArray.push(inst);
                 $('.ql-editor').append('<a class="wikidata" href="' + data.search[i].url + '">' + word + '</a>')
                 $('#textarea').val('');
                 return '';
