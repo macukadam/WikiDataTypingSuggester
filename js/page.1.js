@@ -28,31 +28,6 @@ function searchWithGivenQuery(query) {
     }
 }
 
-function convertStringToJson(JsonString){
-    if(JsonString == ""){
-        return;
-    }
-    var jsonThing = JSON.parse(JsonString);
-    return jsonThing;
-}
-
-function addNewItemToArray(JsonArray, title){
-    var flag = false;
-    JsonArray.forEach(job => {
-        if(job.item == title){
-            flag = true;
-            job.count++;
-        }
-    });
-
-    if(!flag){
-        JsonArray.push({
-            "count":1,
-            "item":title,
-        })
-    }
-}
-
 function annotationAutoCompleteActivate() {
     var words = [];
     var data = {};
@@ -77,17 +52,15 @@ function annotationAutoCompleteActivate() {
                 }
             }
             
-            //Adds title to memory body
-            AddTitleToMemo(i);
-
+            //Add titles to memory body
+            var hiddenTitles = data.search[i].title;
+            var spanHiddenInstances = $('#hiddenTitles');
+            spanHiddenInstances.text(spanHiddenInstances.text() + hiddenTitles);
 
             //Add related instances to memory body
             var hiddenInstance = hiddenInstanceObjectCreator(data.search[i].title);
             var spanHiddenInstances = $('#hiddenInstances');
-            var jsonArray = [];
-            jsonArray = convertStringToJson(spanHiddenInstances.text());
-            addNewItemToArray(jsonArray, hiddenInstance);
-            spanHiddenInstances.text(JSON.stringify(jsonArray));
+            spanHiddenInstances.text(spanHiddenInstances.text() + hiddenInstance);
 
             //Add related subclasses to memory body
             var hiddenSubclasses = hiddenSubclassObjectCreator(data.search[i].title);
@@ -136,16 +109,6 @@ function annotationAutoCompleteActivate() {
             }
         }
     });
-
-    function AddTitleToMemo(i) {
-        var hiddenTitle = data.search[i].title;
-        var spanHiddenInstances = $('#hiddenTitles');
-        var jsonArray = [];
-        jsonArray = convertStringToJson(spanHiddenInstances.text());
-        addNewItemToArray(jsonArray, hiddenTitle);
-        spanHiddenInstances.text(JSON.stringify(jsonArray));
-        return spanHiddenInstances;
-    }
 }
 
 function getPropertiesOfItem(item){
