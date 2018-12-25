@@ -80,23 +80,14 @@ function annotationAutoCompleteActivate() {
             //Adds title to memory body
             AddTitleToMemo(i);
 
-
             //Add related instances to memory body
-            var hiddenInstance = hiddenInstanceObjectCreator(data.search[i].title);
-            var spanHiddenInstances = $('#hiddenInstances');
-            var jsonArray = [];
-            jsonArray = convertStringToJson(spanHiddenInstances.text());
-            addNewItemToArray(jsonArray, hiddenInstance);
-            spanHiddenInstances.text(JSON.stringify(jsonArray));
+            AddInstancesToMemo(i);
 
             //Add related subclasses to memory body
-            var hiddenSubclasses = hiddenSubclassObjectCreator(data.search[i].title);
-            var spanHiddenSubclasses = $('#hiddenSubclasses');
-            spanHiddenSubclasses.text(spanHiddenSubclasses.text() + hiddenSubclasses);
+            AddSubclassesToMemo(i);
 
-            var hiddenProperties = getPropertiesOfItem(data.search[i].title);
-            var spanHiddenProperties = $('#hiddenProperties');
-            spanHiddenProperties.text(spanHiddenProperties.text() + hiddenProperties);
+            //Add related properties to memory body
+            AddPropertiesToMemo(i);
 
             $('.ql-editor').append('<a class="wikidata" data-instances="21627" href="' + data.search[i].url + '">' + word + '</a>');
             $('#textarea').remove();
@@ -137,6 +128,39 @@ function annotationAutoCompleteActivate() {
         }
     });
 
+    function AddPropertiesToMemo(i) {
+        var hiddenProperties = getPropertiesOfItem(data.search[i].title);
+        var spanHiddenProperties = $('#hiddenProperties');
+        var jsonArray = [];
+        jsonArray = convertStringToJson(spanHiddenProperties.text());
+        hiddenProperties.forEach(property => {
+            addNewItemToArray(jsonArray, property);
+        });
+        spanHiddenProperties.text(JSON.stringify(jsonArray));
+    }
+
+    function AddSubclassesToMemo(i) {
+        var hiddenSubclasses = hiddenSubclassObjectCreator(data.search[i].title);
+        var spanHiddenSubclasses = $('#hiddenSubclasses');
+        var jsonArray = [];
+        jsonArray = convertStringToJson(spanHiddenSubclasses.text());
+        hiddenSubclasses.forEach(subclasses => {
+            addNewItemToArray(jsonArray, subclasses);
+        });
+        spanHiddenSubclasses.text(JSON.stringify(jsonArray));
+    }
+
+    function AddInstancesToMemo(i) {
+        var hiddenInstance = hiddenInstanceObjectCreator(data.search[i].title);
+        var spanHiddenInstances = $('#hiddenInstances');
+        var jsonArray = [];
+        jsonArray = convertStringToJson(spanHiddenInstances.text());
+        hiddenInstance.forEach(instance => {
+            addNewItemToArray(jsonArray, instance);
+        });
+        spanHiddenInstances.text(JSON.stringify(jsonArray));
+    }
+
     function AddTitleToMemo(i) {
         var hiddenTitle = data.search[i].title;
         var spanHiddenInstances = $('#hiddenTitles');
@@ -167,9 +191,8 @@ function getPropertiesOfItem(item){
                     } catch (error) {}
                 }
             }
-            responseArray.push(tempArray);
         }
-        return responseArray;
+        return tempArray;
 }
 
 function hiddenInstanceObjectCreator(item){
