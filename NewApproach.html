@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <script src="./js/textcomp.js"></script>
+</head>
+
+<div id="modalHolder" style="display: none;">
+    <div id="modal">
+    </div>
+</div>
+
+<body>
+    <div class="container">
+        <h1 id='heading' class="text-center">Tsunami Expert</h1>
+        <hr>
+        <div id="textDiv" style="display:none" class="form-group">
+            <label for="textarea">WikiData data search:</label>
+            <textarea class="form-control" id="textarea" style="resize: none;"></textarea>
+        </div>
+        <div id="minDiv" class="main">
+            <div>
+                <div class="add-memory-header">
+                    <div style="display: inline-block; width: 100%;">
+                        <div style="float: right;">
+                            
+                            <button style="height: 26px;" onclick="searchByInsance()">Search by Instance</button>
+                            <button style="height: 26px;" onclick="getPropertiesFromMemo()">Search by Properities</button>
+                            <button class="btn-primary" id="button-dialog" onclick="autoCompleteSwitch()">WikiData
+                                Annotation</button>
+                            <input type="radio" name="search type" value="recursive">recursive
+                            <input id='rRadio'type="radio" name="search type" value="no depth" checked="checked">no depth
+                        </div>
+                        <div id="queryInputHolder" style="float: right;">
+                            <textarea id="qryinput" type="text" style="resize: none; height: 26px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <h1>What is a Tsunami</h1>
+                <span id="hiddenTitles" style="display:none">Q8070Q352650Q28919965Q283Q23397Q7944Q7692360Q4367188Q786054Q3246517Q7067935Q15751090Q60186Q8070Q740339</span>
+                <span id="hiddenInstances" style="display:none">Q1799072Q3305213Q11173,Q25403900,Q146505,Q50690,Q2788607,Q12140,Q24017414,Q47154513,Q29430681,Q8386Q7366,Q862597Q5633421,Q39725049,Q21114848Q1107,Q506240,Q201658</span>
+                <span id="hiddenSubclasses" style="display:none">Q8065,Q582695,Q3839081,Q1322005,Q79782Q40050,Q11723014,Q11435,Q2095,Q11173,Q25385534Q337567,Q271669,Q863944,Q12766313Q1322005,Q8065,Q2692116,Q483247,Q3839081Q8065,Q29436423,Q3839081,Q1322005Q2656967,Q179057Q179057,Q3249551Q82794,Q2221906Q8063,Q29020896,Q3405827,Q18593264Q8065,Q582695,Q3839081,Q1322005,Q79782</span>
+                <span id="hiddenProperties" style="display:none">Q8065,Q582695,Q6418532,Q22828680,Q5460604,Q8068Q9093844,Q1799072,Q186167Q3305213,Q2087788,Q4483294,Q399,Q12321255,Q296955,Q165,Q158607,Q2087788Q629,Q556,Q11173,Q25403900,Q146505,Q50690,Q2788607,Q12140,Q6529461,Q106410,Q111059,Q21286991,Q52634190,Q15978631,Q192905,Q179615,Q128709,Q30007162,Q30100868,Q179388,Q182677,Q898574,Q1075,Q5960345,Q3133,Q17244894,Q5960345,Q3142,Q11567495,Q23444,Q11567495,Q849881,Q199877,Q40050,Q11723014,Q5460604,Q7112809,Q2005334,Q51139288Q337567,Q271669,Q7217348,Q678259,P625,P200,P201,P2044,P2046,P2043,P2049,P2234,P2053,P2547,P2610,P3020,P4511,P571,P4792,Q5825790,Q26189069,Q13401990,Q30092776,Q5497887Q1322005,Q8065,Q2692116,Q8396660,Q38768,Q201605,Q1676638,Q167903,Q3839081,Q8070,Q827291,Q5618297,Q17584240,Q2041543,Q22828674,P2320,P276,P625,P4511,P1120,P1339,P1590,P1446,P585,P2527,P2528,P2784,P17,P5386,P2630,P3082,P3081,P2047,Q2,Q5460604,Q54439832,Q83371,Q10929748,Q106032,Q107410,Q36204Q8065,Q29436423,Q8179640,P1903,Q167903,Q131123,Q14396965Q2656967Q179057,Q2657718Q1658231,Q82794,Q15324Q7366,Q1532854,Q3071,Q1955725,Q1542119,Q4470173Q5633421,Q176916Q8063,Q29020896,Q8909453,Q2657718,Q2041543,P824,Q6037522Q8065,Q582695,Q6418532,Q22828680,Q5460604,Q8068Q5366097,Q15637310,Q1107,Q506240,Q17,Q2615652,Q22006653,Q20644794,Q23830577,Q5287,Q45171911,Q59367368</span>
+                <div>
+                    <div style="width: 100%;" id="editor" class="ql-container ql-snow"><div class="ql-editor" data-gramm="false" contenteditable="true" data-placeholder="Compose an epic..."><p>A <a href="http://www.wikidata.org/wiki/Q8070" target="_blank" style="background-color: rgb(255, 255, 255);">tsunami</a> sometimes incorrectly referred to as a tidal wave, also known as a <a href="http://www.wikidata.org/wiki/Q352650" target="_blank" style="background-color: rgb(255, 255, 255);">seismic</a> <a href="http://www.wikidata.org/wiki/Q28919965" target="_blank" style="background-color: rgb(255, 255, 255);">sea wave</a>, is a series of waves in a water body caused by the displacement of a large volume of <a href="http://www.wikidata.org/wiki/Q283" target="_blank" style="background-color: rgb(255, 255, 255);">water</a>, generally in an ocean or a large <a href="http://www.wikidata.org/wiki/Q23397" target="_blank" style="background-color: rgb(255, 255, 255);">lake</a>. <a href="http://www.wikidata.org/wiki/Q7944" target="_blank" style="background-color: rgb(255, 255, 255);">Earthquake</a>s, <a href="http://www.wikidata.org/wiki/Q7692360" target="_blank" style="background-color: rgb(255, 255, 255);">volcanic eruption</a> and other <a href="http://www.wikidata.org/wiki/Q4367188" target="_blank" style="background-color: rgb(255, 255, 255);">underwater explosion</a>s (including <a href="http://www.wikidata.org/wiki/Q786054" target="_blank" style="background-color: rgb(255, 255, 255);">detonation</a>s of <a href="http://www.wikidata.org/wiki/Q3246517" target="_blank" style="background-color: rgb(255, 255, 255);">underwater</a> <a href="http://www.wikidata.org/wiki/Q7067935" target="_blank" style="background-color: rgb(255, 255, 255);">nuclear device</a>s), <a href="http://www.wikidata.org/wiki/Q15751090" target="_blank" style="background-color: rgb(255, 255, 255);">landslides</a>, glacier calvings,</p><p><span style="color: rgb(0, 102, 204);">meteorite</span> impacts and other disturbances above or below water all have the potential to generate a <span style="color: rgb(0, 102, 204);">tsunami</span>. Unlike normal <span style="color: rgb(0, 102, 204);">ocean waves</span>, which are generated by wind, or tides, which are generated by the gravitational pull of the Moon and the Sun, a <span style="color: rgb(0, 102, 204);">tsunami</span>s generated by the displacement of water.</p></div><div class="ql-clipboard" contenteditable="true" tabindex="-1"></div><div class="ql-tooltip ql-hidden"><a class="ql-preview" target="_blank" href="about:blank"></a><input type="text" data-formula="e=mc^2" data-link="https://quilljs.com" data-video="Embed URL"><a class="ql-action"></a><a class="ql-remove"></a></div></div>    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="./js/page.js"></script>
+<script src="./js/wikidata-sdk.js"></script>
+<script src="./js/js-md5.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="./js/jquery-dialog.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./js/addmemory.js"></script>
+<script src="./js/onepagescroll.js"></script>
+<link rel="stylesheet" href="./css/onepage-scroll.css">
+<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+    crossorigin="anonymous" />
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="./css/main.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+</html>
